@@ -16,7 +16,7 @@ class UploadController extends Controller
                 $filePath = $file->store('/', ['disk' => 's3', 'visibility' => 'public']);
                 $fileName = basename($filePath);
 
-                return response()->json(['message' => 'files uploaded.']);
+                return response()->json(['message' => 'file uploaded.']);
             }
         }
         return response()->json(['message' => 'Unable to upload file.']);
