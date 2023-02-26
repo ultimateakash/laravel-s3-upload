@@ -13,12 +13,10 @@ class UploadController extends Controller
             $file = $request->file('file');
 
             if ($file->isValid()) {
-                $extension = $file->getClientOriginalExtension();
-                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $fileName = $originalName . '-' . uniqid() . '.' . $extension;
-                Storage::disk('s3')->put($fileName, file_get_contents($file));
+                $filePath = $file->store('/', ['disk' => 's3', 'visibility' => 'public']);
+                $fileName = basename($filePath);
 
-                return response()->json(['message' => 'file uploaded.']);
+                return response()->json(['message' => 'files uploaded.']);
             }
         }
         return response()->json(['message' => 'Unable to upload file.']);
@@ -26,15 +24,48 @@ class UploadController extends Controller
 
     public function uploadMultiple(Request $request)
     {
-        if($request->hasFile('files')) {
+        if ($request->hasFile('files')) {
             $files = $request->file('files');
 
             foreach ($files as $key => $file) {
                 if($file->isValid()) {
+                    $filePath = $file->store('/', ['disk' => 's3', 'visibility' => 'public']);
+                    $fileName = basename($filePath);
+                }
+            }
+            return response()->json(['message' => 'files uploaded.']);
+        }
+        return response()->json(['message' => 'Unable to upload files.']);
+    }
+
+    public function uploadSingleCustom(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            if ($file->isValid()) {
+                $extension = $file->getClientOriginalExtension();
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $fileName = $originalName . '-' . uniqid() . '.' . $extension;
+                Storage::disk('s3')->put($fileName, file_get_contents($file), 'public');
+
+                return response()->json(['message' => 'file uploaded.']);
+            }
+        }
+        return response()->json(['message' => 'Unable to upload file.']);
+    }
+
+    public function uploadMultipleCustom(Request $request)
+    {
+        if ($request->hasFile('files')) {
+            $files = $request->file('files');
+
+            foreach ($files as $key => $file) {
+                if ($file->isValid()) {
                     $extension = $file->getClientOriginalExtension();
                     $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                     $fileName = $originalName . '-' . uniqid() . '.' . $extension;
-                    Storage::disk('s3')->put($fileName, file_get_contents($file));
+                    Storage::disk('s3')->put($fileName, file_get_contents($file), 'public');
                 }
             }
             return response()->json(['message' => 'files uploaded.']);

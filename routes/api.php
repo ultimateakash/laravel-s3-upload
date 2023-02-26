@@ -16,3 +16,7 @@ use App\Http\Controllers\UploadController;
 
 Route::post('/upload-single',   [UploadController::class, 'uploadSingle']);
 Route::post('/upload-multiple', [UploadController::class, 'uploadMultiple']);
+
+Route::post('/upload-single-custom',   [UploadController::class, 'uploadSingleCustom']);
+Route::post('/upload-multiple-custom', [UploadController::class, 'uploadMultipleCustom']);
+
